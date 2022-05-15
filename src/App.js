@@ -1,25 +1,46 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import { useState, useCallback, useMemo } from "react";
+import Child from "./Child";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    console.log("+ render parent");
+    const [number, setNumber] = useState(0);
+    const [text, setText] = useState("");
+    const caculate = (number) => {
+        for (let i = 0; i < 100000000; i++) {
+            number += 1;
+        }
+        return number;
+    };
+    const hugeCalculate = useMemo(() => caculate(number), [number]);
+    // const hugeCalculate = caculate(number);
+
+    // const incrFunc = () => {
+    //     setNumber((prev) => prev + 1);
+    // };
+    const incrFunc = useCallback(() => {
+        setNumber((prev) => prev + 1);
+    }, []);
+    return (
+        <div className="App">
+            <div className="container">
+                <button
+                    onClick={() => setNumber((prevNumber) => prevNumber + 1)}
+                >
+                    increase
+                </button>
+                <input
+                    type="text"
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    placeholder="type your text"
+                />
+                <p>{hugeCalculate}</p>
+                <p>parent</p>
+                <Child incrFunc={incrFunc} number={number} />
+            </div>
+        </div>
+    );
 }
 
 export default App;
